@@ -106,3 +106,4 @@ docs/_build/
 *.swp
 *.swo
 *~
+/generated/prisma
