@@ -1,13 +1,12 @@
-import 'dotenv/config';
-import express from 'express'
-import { Request, Response } from 'express'
-const app = express()
-const port = 3000
+import express from "express";
+import { Request, Response } from "express";
+const app = express();
+const port = 3000;
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!')
-})
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello World!");
+});
 
 app.listen(port, () => {
-  console.log(`Backend listening on port ${port}`)
-})
+  console.log(`Server listening on port ${port}`);
+});
