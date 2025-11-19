@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 
-class User {
+class Product {
   private static prisma: PrismaClient = new PrismaClient();
 
-  static async getAllUsers() {
+  static async getAll() {
     return await this.prisma.user.findMany();
   }
 
-  static async createUser(name: string, email: string) {
+  static async create(name: string, email: string) {
     return await this.prisma.user.create({
       data: {
         name,
@@ -24,21 +24,13 @@ class User {
     })
   }
 
-  static async getUserByEmail(email: string) {
-    return await this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
-  }
-
-  static async deleteUserByEmail(email: string) {
+  static async delete(id: number) {
     return await this.prisma.user.delete({
       where: {
-        email,
+        id,
       },
     });
   }
 }
 
-export default User
+export default Product

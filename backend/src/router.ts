@@ -1,8 +1,11 @@
-import express from "express";
-import users_router from "./routes/users_router";
+import express from "express"
+import passport from "passport"
+import auth_router from "./routes/public/auth"
+import products_router from "./routes/protected/products"
 
-var router = express.Router();
+const router = express.Router()
 
-router.use("/users", users_router);
+router.use("/auth", auth_router)
+router.use("/products", products_router)
 
-export default router;
+export default router
