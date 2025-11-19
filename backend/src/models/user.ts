@@ -15,6 +15,14 @@ class User {
       },
     });
   }
+  
+  static async findByPk(id: number) {
+    return await this.prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
+  }
 
   static async getUserByEmail(email: string) {
     return await this.prisma.user.findUnique({
@@ -32,3 +40,5 @@ class User {
     });
   }
 }
+
+export default User
