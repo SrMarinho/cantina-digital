@@ -27,6 +27,15 @@ class Product {
     })
   }
 
+  static async update(id: number, data: Partial<{ name: string; price: number; description: string; isAvailable: boolean; imageUrl: string;}>) {
+    return await this.prisma.product.updateMany({
+      where: {
+        id,
+      },
+      data
+    });
+  }
+
   static async delete(id: number) {
     return await this.prisma.product.delete({
       where: {
