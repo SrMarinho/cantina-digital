@@ -4,20 +4,23 @@ class Product {
   private static prisma: PrismaClient = new PrismaClient();
 
   static async getAll() {
-    return await this.prisma.user.findMany();
+    return await this.prisma.product.findMany();
   }
 
-  static async create(name: string, email: string) {
-    return await this.prisma.user.create({
+  static async create(name: string, price: number, isAvailable: boolean = true, description?: string, imageUrl?: string) {
+    return await this.prisma.product.create({
       data: {
         name,
-        email,
+        price,
+        isAvailable,
+        description,
+        imageUrl,
       },
     });
   }
   
   static async findByPk(id: number) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.product.findUnique({
       where: {
         id
       }
@@ -25,7 +28,7 @@ class Product {
   }
 
   static async delete(id: number) {
-    return await this.prisma.user.delete({
+    return await this.prisma.product.delete({
       where: {
         id,
       },

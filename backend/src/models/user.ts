@@ -7,11 +7,12 @@ class User {
     return await this.prisma.user.findMany();
   }
 
-  static async createUser(name: string, email: string) {
+  static async createUser(name: string, email: string, schoolId?: number) {
     return await this.prisma.user.create({
       data: {
         name,
         email,
+        schoolId,
       },
     });
   }
@@ -24,18 +25,20 @@ class User {
     })
   }
 
-  static async getUserByEmail(email: string) {
-    return await this.prisma.user.findUnique({
+  static async getUserByEmail(email: string, schoolId: number) {
+    return await this.prisma.user.findFirst({
       where: {
         email,
-      },
+        schoolId
+      }
     });
   }
 
-  static async deleteUserByEmail(email: string) {
-    return await this.prisma.user.delete({
+  static async deleteUserByEmail(email: string, schoolId: number) {
+    return await this.prisma.user.deleteMany({
       where: {
         email,
+        schoolId
       },
     });
   }
