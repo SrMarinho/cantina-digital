@@ -69,7 +69,6 @@ async function main() {
     schools.map((school) => {
       return [
         {
-          schoolId: school.id,
           name: 'Admin User',
           email: 'admin@email.com',
           password: hashedPassword,
@@ -77,7 +76,6 @@ async function main() {
           registrationNumber: `REG${school.id}001`
         },
         {
-          schoolId: school.id,
           name: 'Regular User',
           email: 'usere@email.com',
           password: hashedPassword,

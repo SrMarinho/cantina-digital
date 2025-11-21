@@ -9,4 +9,12 @@ class AuthControllers {
     static async login(request: Request, response: Response): Promise<Object> {
         return {}
     }
+
+    static async logout(request: Request, response: Response): Promise<Object> {
+        return {}
+    }
+
+    static async refreshToken(request: Request, response: Response): Promise<Object> {
+        return {}
+    }
 }

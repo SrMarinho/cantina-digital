@@ -65,7 +65,7 @@ class AuthService {
         name,
         email,
         password: hashedPassword,
-        role: 'USER' // Role padrão
+        schoolId: undefined as number
       }
     });
 
