@@ -16,90 +16,97 @@ datasource db {
 
 model School {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @db.VarChar(255)
   code      String   @unique @db.VarChar(20)
   address   String?  @db.Text
   phone     String?  @db.VarChar(20)
   email     String?  @db.VarChar(100)
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  orders        Order[]
-  inventoryLogs InventoryLog[]
-  stocks        Stock[]
-  schoolsUsers  SchoolsUsers[]
-  schoolOrders  SchoolOrders[]
+  users  User[]
+  orders Order[]
+  stocks Stock[]
 
+  @@index([code])
+  @@index([isActive])
   @@map("schools")
 }
 
-model SchoolsUsers {
-  schoolId Int @map("school_id")
-  userId   Int @map("user_id")
+model User {
+  id                 Int      @id @default(autoincrement())
+  name               String   @db.VarChar(255)
+  email              String   @unique @db.VarChar(100)
+  password           String   @db.VarChar(255)
+  roleId             Int      @map("role_id")
+  registrationNumber String?  @map("registration_number") @db.VarChar(50)
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   // Relations
-  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     Role    @relation(fields: [roleId], references: [id])
+  schools  School? @relation(fields: [schoolId], references: [id])
+  orders   Order[]
+  schoolId Int?    @map("school_id")
 
-  @@id([schoolId, userId])
-  @@map("schools_users")
-}
-
-model SchoolOrders {
-  id       Int @id @default(autoincrement())
-  schoolId Int @map("school_id")
-  orderId  Int @map("order_id")
-
-  // Relations
-  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  @@unique([schoolId, orderId], name: "school_order_unique")
-  @@map("school_orders")
+  @@index([email])
+  @@index([roleId])
+  @@index([isActive])
+  @@map("users")
 }
 
 model Role {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique @db.VarChar(50)
-  description String? @db.Text
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(50)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  users User[]
 
   @@map("roles")
 }
 
-model User {
-  id                 Int     @id @default(autoincrement())
-  name               String  @db.VarChar(100)
-  email              String  @unique @db.VarChar(100)
-  password           String  @db.VarChar(255)
-  role               String  @default("user") @db.VarChar(50) // admin, employee, etc.
-  registrationNumber String? @map("registration_number") @db.VarChar(50)
-
-  // Relations
-  orders        Order[]
-  inventoryLogs InventoryLog[]
-  schoolsUsers  SchoolsUsers[]
-
-  @@map("users")
-}
-
 model Product {
   id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
+  name        String   @db.VarChar(255)
   description String?  @db.Text
-  imageUrl    String?  @map("image_url") @db.VarChar(255)
+  imageUrl    String?  @map("image_url") @db.VarChar(500)
   isAvailable Boolean  @default(true) @map("is_available")
-  basePrice   Decimal  @map("base_price") @db.Decimal(10, 2)
+  basePrice   Decimal  @map("base_price") @db.Decimal(12, 2)
+  categoryId  Int?     @map("category_id")
   createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  // Relations (removida a relação com school)
-  category      Category?      @relation(fields: [categoryId], references: [id])
-  categoryId    Int?
-  orderItems    OrderItem[]
-  inventoryLogs InventoryLog[]
-  stocks        Stock[] // Relação com estoques por escola
+  // Relations
+  category   Category?   @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+  stocks     Stock[]
 
+  @@index([name])
+  @@index([isAvailable])
+  @@index([categoryId])
   @@map("products")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(255)
+  description String?  @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  products Product[]
+
+  @@index([name])
+  @@index([isActive])
+  @@map("categories")
 }
 
 model Stock {
@@ -107,42 +114,42 @@ model Stock {
   productId   Int      @map("product_id")
   schoolId    Int      @map("school_id")
   quantity    Int      @default(0)
-  minQuantity Int      @default(0) @map("min_quantity") // Estoque mínimo
-  maxQuantity Int?     @map("max_quantity") // Estoque máximo
-  price       Decimal? @db.Decimal(10, 2) // Preço específico por escola (opcional)
+  minQuantity Int      @default(10) @map("min_quantity")
+  maxQuantity Int?     @map("max_quantity")
+  price       Decimal? @db.Decimal(12, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  product Product @relation(fields: [productId], references: [id])
-  school  School  @relation(fields: [schoolId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  school  School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
   @@unique([productId, schoolId], name: "stock_product_school_unique")
+  @@index([productId])
+  @@index([schoolId])
+  @@index([quantity])
   @@map("stocks")
 }
 
-model Category {
-  id          Int     @id @default(autoincrement())
-  name        String  @db.VarChar(100)
-  description String? @db.Text
+model Order {
+  id          Int         @id @default(autoincrement())
+  schoolId    Int         @map("school_id")
+  userId      Int         @map("user_id")
+  totalAmount Decimal     @map("total_amount") @db.Decimal(12, 2)
+  status      OrderStatus @default(PENDING)
+  notes       String?     @db.Text
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
 
   // Relations
-  products Product[]
+  user       User        @relation(fields: [userId], references: [id])
+  school     School      @relation(fields: [schoolId], references: [id])
+  orderItems OrderItem[]
 
-  @@map("categories")
-}
-
-model Order {
-  id          Int      @id @default(autoincrement())
-  schoolId    Int      @map("school_id")
-  userId      Int      @map("user_id")
-  totalAmount Decimal  @map("total_amount") @db.Decimal(10, 2)
-  status      String   @default("pending") @db.VarChar(20)
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  schoolOrders SchoolOrders[]
-  school       School         @relation(fields: [schoolId], references: [id])
-  orderItems   OrderItem[]
-
+  @@index([schoolId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
   @@map("orders")
 }
 
@@ -151,32 +158,24 @@ model OrderItem {
   orderId    Int     @map("order_id")
   productId  Int     @map("product_id")
   quantity   Int
-  unitPrice  Decimal @map("unit_price") @db.Decimal(10, 2)
-  totalPrice Decimal @map("total_price") @db.Decimal(10, 2)
+  unitPrice  Decimal @map("unit_price") @db.Decimal(12, 2)
+  totalPrice Decimal @map("total_price") @db.Decimal(12, 2)
 
   // Relations
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
+  @@index([orderId])
+  @@index([productId])
   @@map("order_items")
 }
 
-model InventoryLog {
-  id            Int      @id @default(autoincrement())
-  schoolId      Int      @map("school_id")
-  productId     Int      @map("product_id")
-  userId        Int      @map("user_id")
-  type          String   @db.VarChar(20) // entrada, saida, ajuste
-  quantity      Int
-  previousStock Int      @map("previous_stock")
-  newStock      Int      @map("new_stock")
-  reason        String?  @db.VarChar(100)
-  createdAt     DateTime @default(now()) @map("created_at")
-
-  // Relations
-  school  School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
-
-  @@map("inventory_logs")
+enum OrderStatus {
+  PENDING
+  APPROVED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
 }

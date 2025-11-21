@@ -6,14 +6,11 @@ interface AuthRequest extends Request {
 }
 
 class AuthMiddleware {
-    static registerToken(request: AuthRequest, userData: any) {
-    }
-
     static authenticateToken(request: AuthRequest, response: Response, next: NextFunction) {
         const authorization = request.headers["authorization"]
         let token = null
         if (authorization) {
-            token = authorization.split(" ")[1]
+            token = authorization.replace("Bearer ", "").trim()
         }
         if (!token) {
             return response.status(401).json({message: "Token de acesso requerido"})
@@ -26,6 +23,8 @@ class AuthMiddleware {
             }
 
             const decoded = jwt.verify(token, secret)
+
+            console.debug("Token verificado com sucesso:", decoded)
 
             request.user = decoded
 
