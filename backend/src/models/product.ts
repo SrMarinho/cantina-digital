@@ -7,11 +7,11 @@ class Product {
     return await this.prisma.product.findMany();
   }
 
-  static async create(name: string, price: number, isAvailable: boolean = true, description?: string, imageUrl?: string) {
+  static async create(name: string, basePrice: number, isAvailable: boolean = true, description?: string, imageUrl?: string) {
     return await this.prisma.product.create({
       data: {
         name,
-        price,
+        basePrice,
         isAvailable,
         description,
         imageUrl,

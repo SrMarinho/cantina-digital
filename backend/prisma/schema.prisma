@@ -66,7 +66,7 @@ model Product {
   description   String?        @db.Text
   imageUrl      String?        @map("image_url") @db.VarChar(255)
   isAvailable   Boolean        @default(true) @map("is_available")
-  basePrice     Decimal        @map("base_price") @db.Decimal(10, 2) // Preço base do produto
+  basePrice     Decimal        @map("base_price") @db.Decimal(10, 2)
   createdAt     DateTime       @default(now()) @map("created_at")
 
   // Relations (removida a relação com school)
