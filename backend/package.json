@@ -38,8 +38,6 @@
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
-    "@types/passport": "^1.0.17",
-    "@types/passport-http-bearer": "^1.0.42",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "dotenv-cli": "^11.0.0",
