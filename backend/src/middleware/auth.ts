@@ -34,3 +34,5 @@ class AuthMiddleware {
         }
     }
 }
+
+export default AuthMiddleware.authenticateToken

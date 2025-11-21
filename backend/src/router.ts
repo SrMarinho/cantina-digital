@@ -1,10 +1,10 @@
 import express from "express"
-import auth_router from "./routes/public/auth"
-import products_router from "./routes/protected/products"
+import public_router from "./routes/public"
+import protected_router from "./routes/protected"
 
 const router = express.Router()
 
-router.use("/auth", auth_router)
-router.use("/products", products_router)
+router.use(public_router)
+router.use(protected_router)
 
 export default router

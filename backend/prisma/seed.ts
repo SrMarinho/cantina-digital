@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { PrismaClient, OrderStatus } from '../src/generated/prisma/client'
-import bcrypt from 'bcrypt'
+import { hashPassword } from '../src/utils/password.utils'
+
 
 const prisma = new PrismaClient()
 
@@ -55,7 +56,7 @@ async function main() {
   // 3. Criar Usuários
   console.log('👤 Criando usuários...')
   const secretKey = process.env.JWT_SECRET || 'default-secret-key'
-  const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD + secretKey, 10)
+  const hashedPassword = await hashPassword(DEFAULT_PASSWORD)
 
   let userCount = 0
   const usersData = schools.flatMap(school => {
