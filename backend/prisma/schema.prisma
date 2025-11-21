@@ -26,7 +26,6 @@ model School {
 
   // Relations
   users         User[]
-  categories    Category[]
   orders        Order[]
   inventoryLogs InventoryLog[]
   stocks        Stock[]
@@ -100,10 +99,8 @@ model Category {
   id          Int     @id @default(autoincrement())
   name        String  @db.VarChar(100)
   description String? @db.Text
-  schoolId    Int     @map("school_id")
 
   // Relations
-  school   School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   products Product[]
 
   @@map("categories")
