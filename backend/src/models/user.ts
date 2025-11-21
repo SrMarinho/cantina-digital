@@ -1,11 +1,12 @@
 import { PrismaClient } from "../generated/prisma/client";
 import bcrypt from 'bcrypt';
 
-class User {
-  private static prisma: PrismaClient = new PrismaClient();
 
+const prisma = new PrismaClient();
+
+class User {
   static async getAllUsers() {
-    return await this.prisma.user.findMany();
+    return await prisma.user.findMany();
   }
 
   static async createUser(name: string, email: string, password: string, schoolId?: number) {
@@ -14,7 +15,7 @@ class User {
 
     const hashedPassword = await bcrypt.hash(password + secretKey, 10);
 
-    return await this.prisma.user.create({
+    return await prisma.user.create({
       data: {
         name,
         email,
@@ -25,7 +26,7 @@ class User {
   }
   
   static async findByPk(id: number) {
-    return await this.prisma.user.findUnique({
+    return await prisma.user.findUnique({
       where: {
         id
       }
@@ -33,7 +34,7 @@ class User {
   }
 
   static async getUserByEmail(email: string, schoolId: number) {
-    return await this.prisma.user.findFirst({
+    return await prisma.user.findFirst({
       where: {
         email,
         schoolId
@@ -42,7 +43,7 @@ class User {
   }
 
   static async deleteUserByEmail(email: string, schoolId: number) {
-    return await this.prisma.user.deleteMany({
+    return await prisma.user.deleteMany({
       where: {
         email,
         schoolId

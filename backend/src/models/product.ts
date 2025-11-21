@@ -1,14 +1,14 @@
 import { PrismaClient } from "../generated/prisma/client";
 
-class Product {
-  private static prisma: PrismaClient = new PrismaClient();
+const prisma = new PrismaClient();
 
+class Product {
   static async getAll() {
-    return await this.prisma.product.findMany();
+    return await prisma.product.findMany();
   }
 
   static async create(name: string, basePrice: number, isAvailable: boolean = true, description?: string, imageUrl?: string) {
-    return await this.prisma.product.create({
+    return await prisma.product.create({
       data: {
         name,
         basePrice,
@@ -20,7 +20,7 @@ class Product {
   }
   
   static async findByPk(id: number) {
-    return await this.prisma.product.findUnique({
+    return await prisma.product.findUnique({
       where: {
         id
       }
@@ -28,7 +28,7 @@ class Product {
   }
 
   static async update(id: number, data: Partial<{ name: string; price: number; description: string; isAvailable: boolean; imageUrl: string;}>) {
-    return await this.prisma.product.updateMany({
+    return await prisma.product.updateMany({
       where: {
         id,
       },
@@ -37,7 +37,7 @@ class Product {
   }
 
   static async delete(id: number) {
-    return await this.prisma.product.delete({
+    return await prisma.product.delete({
       where: {
         id,
       },

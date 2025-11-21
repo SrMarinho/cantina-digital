@@ -1,5 +1,4 @@
 import express from "express"
-import passport from "passport"
 import auth_router from "./routes/public/auth"
 import products_router from "./routes/protected/products"
 

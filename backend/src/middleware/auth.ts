@@ -6,6 +6,9 @@ interface AuthRequest extends Request {
 }
 
 class AuthMiddleware {
+    static registerToken(request: AuthRequest, userData: any) {
+    }
+
     static authenticateToken(request: AuthRequest, response: Response, next: NextFunction) {
         const authorization = request.headers["authorization"]
         let token = null
