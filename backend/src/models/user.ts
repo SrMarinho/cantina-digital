@@ -33,20 +33,18 @@ class User {
     })
   }
 
-  static async getUserByEmail(email: string, schoolId: number) {
+  static async getUserByEmail(email: string) {
     return await prisma.user.findFirst({
       where: {
         email,
-        schoolId
       }
     });
   }
 
-  static async deleteUserByEmail(email: string, schoolId: number) {
+  static async deleteUserByEmail(email: string) {
     return await prisma.user.deleteMany({
       where: {
         email,
-        schoolId
       },
     });
   }

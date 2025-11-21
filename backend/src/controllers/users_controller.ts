@@ -45,11 +45,11 @@ class UsersController {
         }
     }
 
-    public getUserByEmail(email: string) {
+    public static getUserByEmail(email: string) {
         return User.getUserByEmail(email);
     }
 
-    public deleteUserByEmail(email: string) {
+    public static deleteUserByEmail(email: string) {
         return User.deleteUserByEmail(email);
     }
 }
