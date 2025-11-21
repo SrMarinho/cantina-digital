@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../generated/prisma/client";
 
 class User {
   private static prisma: PrismaClient = new PrismaClient();

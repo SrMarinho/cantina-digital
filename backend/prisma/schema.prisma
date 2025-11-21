@@ -1,6 +1,12 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -20,7 +26,6 @@ model School {
 
   // Relations
   users         User[]
-  products      Product[]
   categories    Category[]
   orders        Order[]
   inventoryLogs InventoryLog[]
@@ -29,13 +34,23 @@ model School {
   @@map("schools")
 }
 
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique @db.VarChar(50)
+  description String? @db.Text
+
+  @@map("roles")
+}
+
 model User {
   id       Int     @id @default(autoincrement())
   schoolId Int?    @map("school_id")
   school   School? @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   name     String  @db.VarChar(100)
   email    String
+  password String  @db.VarChar(255)
   role     String  @default("user") @db.VarChar(50) // admin, employee, etc.
+  registrationNumber String? @map("registration_number") @db.VarChar(50)
 
   // Relations
   orders        Order[]
@@ -51,17 +66,15 @@ model Product {
   description   String?        @db.Text
   imageUrl      String?        @map("image_url") @db.VarChar(255)
   isAvailable   Boolean        @default(true) @map("is_available")
-  price         Decimal        @db.Decimal(10, 2) // Preço base do produto
+  basePrice     Decimal        @map("base_price") @db.Decimal(10, 2) // Preço base do produto
   createdAt     DateTime       @default(now()) @map("created_at")
-  school        School?        @relation(fields: [schoolId], references: [id])
-  schoolId      Int?
-  stocks        Stock[]
+
+  // Relations (removida a relação com school)
   category      Category?      @relation(fields: [categoryId], references: [id])
   categoryId    Int?
-  order         Order?         @relation(fields: [orderId], references: [id])
-  orderId       Int?
   orderItems    OrderItem[]
   inventoryLogs InventoryLog[]
+  stocks        Stock[]        // Relação com estoques por escola
 
   @@map("products")
 }
@@ -76,8 +89,8 @@ model Stock {
   price       Decimal? @db.Decimal(10, 2) // Preço específico por escola (opcional)
 
   // Relations
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  school  School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+  school  School  @relation(fields: [schoolId], references: [id])
 
   @@unique([productId, schoolId], name: "stock_product_school_unique")
   @@map("stocks")
@@ -108,7 +121,6 @@ model Order {
   school     School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
-  products   Product[]
 
   @@map("orders")
 }

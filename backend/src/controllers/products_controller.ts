@@ -7,6 +7,7 @@ class ProductsController {
             const products = await Product.getAll();
             return response.json(products);
         } catch (error) {
+            console.log(error);
             return response.status(500).json({ error: 'Internal server error' });
         }
     }

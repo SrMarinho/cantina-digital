@@ -107,3 +107,13 @@ docs/_build/
 *.swo
 *~
 /generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
