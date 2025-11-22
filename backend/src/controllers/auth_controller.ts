@@ -17,10 +17,7 @@ class AuthController {
 
       const result = await AuthService.register({ email, password, name });
 
-      response.status(201).json({
-        success: true,
-        data: result
-      });
+      response.status(201).json(result);
     } catch (error: any) {
       response.status(400).json({
         success: false,
@@ -43,10 +40,7 @@ class AuthController {
 
       const result = await AuthService.login(email, password);
 
-      response.status(200).json({
-        success: true,
-        data: result
-      });
+      response.status(200).json(result);
     } catch (error: any) {
       response.status(401).json({
         success: false,

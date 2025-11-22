@@ -30,11 +30,13 @@ export class AuthService {
       email: user.email 
     });
 
-    // Remover senha do retorno
-    const { password, ...userWithoutPassword } = user;
+    const user_return  = {
+      userId: (user.id).toString(),
+      message: "Usuário registrado com sucesso",
+    }
 
     return {
-      user: userWithoutPassword,
+      user: user_return,
       token
     };
   }
@@ -47,7 +49,7 @@ export class AuthService {
     }
 
     // Validar senha
-    const isPasswordValid = await comparePassword(password, user.password);
+    const isPasswordValid = await comparePassword(password, user.senha_hash);
     if (!isPasswordValid) {
       throw new Error("Invalid credentials");
     }
@@ -58,11 +60,14 @@ export class AuthService {
       email: user.email 
     });
 
-    // Remover senha do retorno
-    const { password: _, ...userWithoutPassword } = user;
+    const user_return  = {
+      userId: (user.id).toString(),
+      nome: user.nome,
+      email: user.email,
+    }
 
     return {
-      user: userWithoutPassword,
+      user: user_return,
       token
     };
   }

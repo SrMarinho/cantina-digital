@@ -1,194 +1,141 @@
 import 'dotenv/config'
-import { PrismaClient, OrderStatus } from '../src/generated/prisma/client'
+import { PrismaClient } from '../src/generated/prisma/client'
 import { hashPassword } from '../src/utils/password.utils'
-
 
 const prisma = new PrismaClient()
 
 // Configurações - fácil de modificar
-const NUMBER_OF_SCHOOLS = 3
-const NUMBER_OF_CATEGORIES = 4
-const NUMBER_OF_PRODUCTS_PER_CATEGORY = 6
-const NUMBER_OF_USERS_PER_SCHOOL = 3
-const NUMBER_OF_ORDERS_PER_SCHOOL = 5
+const NUMBER_OF_USERS = 10
+const NUMBER_OF_PRODUCTS = 15
+const NUMBER_OF_ORDERS = 8
+const NUMBER_OF_ITEMS_PER_ORDER = 3
 const DEFAULT_PASSWORD = '123456'
+
+// Status predefinidos para os pedidos
+const ORDER_STATUSES = ['PENDENTE', 'PROCESSANDO', 'ENTREGUE', 'CANCELADO']
 
 async function main() {
   console.log('🌱 Iniciando seed do banco de dados...')
 
-  // Limpar dados existentes na ordem correta
+  // Limpar dados existentes na ordem correta (respeitando as relações)
   console.log('🧹 Limpando dados existentes...')
   await prisma.orderItem.deleteMany()
   await prisma.order.deleteMany()
-  await prisma.stock.deleteMany()
   await prisma.product.deleteMany()
-  await prisma.category.deleteMany()
   await prisma.user.deleteMany()
-  await prisma.role.deleteMany()
-  await prisma.school.deleteMany()
 
-  // 1. Criar Roles
-  console.log('👥 Criando roles...')
-  const rolesData = [
-    { name: 'admin', description: 'Administrador do sistema' },
-    { name: 'manager', description: 'Gerente de escola' },
-    { name: 'employee', description: 'Funcionário' },
-    { name: 'user', description: 'Usuário comum' }
-  ]
-
-  await prisma.role.createMany({ data: rolesData })
-  const roles = await prisma.role.findMany()
-
-  // 2. Criar Escolas
-  console.log('🏫 Criando escolas...')
-  const schoolsData = Array.from({ length: NUMBER_OF_SCHOOLS }, (_, i) => ({
-    name: `Escola ${i + 1}`,
-    code: `SCH${String(i + 1).padStart(3, '0')}`,
-    address: `Endereço da Escola ${i + 1}, Nº ${100 + i}, Centro`,
-    phone: `(11) 9${String(i).padStart(4, '0')}-${String(i).padStart(4, '0')}`,
-    email: `escola${i + 1}@email.com`,
-    isActive: true
-  }))
-
-  await prisma.school.createMany({ data: schoolsData })
-  const schools = await prisma.school.findMany()
-
-  // 3. Criar Usuários
+  // 1. Criar Usuários
   console.log('👤 Criando usuários...')
-  const secretKey = process.env.JWT_SECRET || 'default-secret-key'
   const hashedPassword = await hashPassword(DEFAULT_PASSWORD)
 
-  let userCount = 0
-  const usersData = schools.flatMap(school => {
-      return Array.from({ length: NUMBER_OF_USERS_PER_SCHOOL }, (_, i) => {
-        const roleIndex = i % roles.length
-        const role = roles[roleIndex]
-        
-        const user = {
-          name: `Usuário ${userCount}`,
-          email: `usuario${userCount}@email.com`,
-          password: hashedPassword,
-          roleId: role.id,
-          registrationNumber: `REG${school.id}${String(i + 1).padStart(3, '0')}`,
-          isActive: true
-        }
-
-        userCount += 1
-
-        return user
-      })
-    }
-  )
+  const usersData = Array.from({ length: NUMBER_OF_USERS }, (_, i) => ({
+    nome: `Usuário ${i + 1}`,
+    email: `usuario${i + 1}@email.com`,
+    senha_hash: hashedPassword,
+    matricula: i % 3 === 0 ? null : `MAT${String(i + 1).padStart(5, '0')}`, // 1/3 sem matrícula
+    created_at: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)) // Datas escalonadas
+  }))
 
   await prisma.user.createMany({ data: usersData })
   const users = await prisma.user.findMany()
+  console.log(`✅ ${users.length} usuários criados`)
 
-  // 4. Criar Categorias
-  console.log('📁 Criando categorias...')
-  const categoriesData = Array.from({ length: NUMBER_OF_CATEGORIES }, (_, i) => ({
-    name: `Categoria ${i + 1}`,
-    description: `Descrição da Categoria ${i + 1}`,
-    isActive: true
-  }))
-
-  await prisma.category.createMany({ data: categoriesData })
-  const categories = await prisma.category.findMany()
-
-  // 5. Criar Produtos
+  // 2. Criar Produtos
   console.log('📦 Criando produtos...')
-  const productsData = categories.flatMap(category =>
-    Array.from({ length: NUMBER_OF_PRODUCTS_PER_CATEGORY }, (_, i) => {
-      const productNumber = (category.id - 1) * NUMBER_OF_PRODUCTS_PER_CATEGORY + i + 1
-      return {
-        name: `Produto ${productNumber}`,
-        description: `Descrição do Produto ${productNumber} da Categoria ${category.name}`,
-        imageUrl: `https://exemplo.com/produto${productNumber}.jpg`,
-        isAvailable: true,
-        basePrice: ((productNumber * 30 + 1).toFixed(2)),
-        categoryId: category.id
-      }
-    })
-  )
+  const productsData = Array.from({ length: NUMBER_OF_PRODUCTS }, (_, i) => ({
+    nome: `Produto ${i + 1}`,
+    descricao: `Descrição detalhada do produto ${i + 1}. Este é um produto de alta qualidade.`,
+    preco: Number((10 + (i * 2.5)).toFixed(2)), // Preços progressivos: 10.00, 12.50, 15.00, etc.
+    imagem: i % 4 === 0 ? null : `https://exemplo.com/produto${i + 1}.jpg`, // 1/4 sem imagem
+    disponivel: i % 8 !== 0 // Aproximadamente 87.5% disponíveis
+  }))
 
   await prisma.product.createMany({ data: productsData })
   const products = await prisma.product.findMany()
+  console.log(`✅ ${products.length} produtos criados`)
 
-  // 6. Criar Stocks
-  console.log('📊 Criando stocks...')
-  const stocksData = schools.flatMap(school =>
-    products.map(product => ({
-      productId: product.id,
-      schoolId: school.id,
-      quantity: (school.id * 10) + product.id, // Quantidade previsível
-      minQuantity: 10,
-      maxQuantity: 100,
-      price: (Number(product.basePrice) * 1.2).toFixed(2)
-    }))
-  )
+  // 3. Criar Pedidos e Itens
+  console.log('🛒 Criando pedidos e itens...')
 
-  await prisma.stock.createMany({ data: stocksData })
+  for (let i = 0; i < NUMBER_OF_ORDERS; i++) {
+    // Selecionar usuário de forma previsível (cíclica)
+    const user = users[i % users.length]
+    
+    // Status distribuído de forma previsível
+    const status = ORDER_STATUSES[i % ORDER_STATUSES.length]
+    
+    // Data do pedido escalonada (pedidos mais recentes primeiro)
+    const data_pedido = new Date(Date.now() - (i * 3 * 24 * 60 * 60 * 1000))
 
-  // 7. Criar Ordens e OrderItems
-  console.log('🛒 Criando ordens...')
-  const orderStatuses = Object.values(OrderStatus)
-  
-  for (const school of schools) {
-    const schoolUsers = users.filter(user => 
-      (user.registrationNumber)?.toString().startsWith(`REG${school.id}`)
+    // Selecionar produtos para este pedido (sempre os mesmos para o mesmo índice)
+    const startProductIndex = (i * NUMBER_OF_ITEMS_PER_ORDER) % products.length
+    const orderProducts = products.slice(
+      startProductIndex, 
+      startProductIndex + NUMBER_OF_ITEMS_PER_ORDER
     )
 
-    for (let i = 0; i < NUMBER_OF_ORDERS_PER_SCHOOL; i++) {
-      const user = schoolUsers[i % schoolUsers.length]
-      const schoolProducts = products
-      
-      // Selecionar 3-5 produtos aleatórios para esta ordem
-      const orderProducts = schoolProducts
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3 + Math.floor(Math.random() * 3))
+    // Se não houver produtos suficientes, pega do início
+    const selectedProducts = orderProducts.length === NUMBER_OF_ITEMS_PER_ORDER 
+      ? orderProducts 
+      : [...orderProducts, ...products.slice(0, NUMBER_OF_ITEMS_PER_ORDER - orderProducts.length)]
 
-      // Calcular total
-      let totalAmount = 0
-      const orderItemsData = orderProducts.map(product => {
-        const quantity = 1 + Math.floor(Math.random() * 3)
-        const unitPrice = Number(product.basePrice) * 1.2
-        const totalPrice = quantity * unitPrice
-        totalAmount += totalPrice
+    // Calcular total do pedido
+    let total = 0
+    const orderItemsData = selectedProducts.map((product, index) => {
+      const quantidade = (i + index + 1) % 4 + 1 // Quantidade entre 1-4 de forma previsível
+      const preco_unitario = Number(product.preco)
+      const itemTotal = quantidade * preco_unitario
+      total += itemTotal
 
-        return {
-          productId: product.id,
-          quantity,
-          unitPrice: unitPrice.toFixed(2),
-          totalPrice: totalPrice.toFixed(2)
-        }
-      })
+      return {
+        product_id: product.id,
+        quantidade,
+        preco_unitario
+      }
+    })
 
-      // Criar ordem
-      const order = await prisma.order.create({
-        data: {
-          schoolId: school.id,
-          userId: user.id,
-          totalAmount: totalAmount.toFixed(2),
-          status: orderStatuses[i % orderStatuses.length], // Distribui status de forma previsível
-          notes: `Ordem ${i + 1} para Escola ${school.id}`,
-        }
-      })
+    // Criar pedido
+    const order = await prisma.order.create({
+      data: {
+        user_id: user.id,
+        data_pedido,
+        total: Number(total.toFixed(2)),
+        status,
+      }
+    })
 
-      // Criar itens da ordem
-      await prisma.orderItem.createMany({
-        data: orderItemsData.map(item => ({
-          ...item,
-          orderId: order.id
-        }))
-      })
-    }
+    // Criar itens do pedido
+    await prisma.orderItem.createMany({
+      data: orderItemsData.map(item => ({
+        order_id: order.id,
+        product_id: item.product_id,
+        quantidade: item.quantidade,
+        preco_unitario: item.preco_unitario
+      }))
+    })
+
+    console.log(`📦 Pedido ${i + 1} criado com ${selectedProducts.length} itens`)
   }
 
+  // Estatísticas finais
   console.log('\n✅ Seed concluída com sucesso!')
-  console.log(`🏫 Escolas criadas: ${NUMBER_OF_SCHOOLS}`)
-  console.log(`👥 Usuários criados: ${NUMBER_OF_SCHOOLS * NUMBER_OF_USERS_PER_SCHOOL}`)
-  console.log(`📁 Categorias criadas: ${NUMBER_OF_CATEGORIES}`)
-  console.log(`📦 Produtos criados: ${NUMBER_OF_CATEGORIES * NUMBER_OF_PRODUCTS_PER_CATEGORY}`)
-  console.log(`🛒 Ordens criadas: ${NUMBER_OF_SCHOOLS * NUMBER_OF_ORDERS_PER_SCHOOL}`)
+  console.log('📊 Estatísticas:')
+  console.log(`   👥 Usuários: ${NUMBER_OF_USERS}`)
+  console.log(`   📦 Produtos: ${NUMBER_OF_PRODUCTS}`)
+  console.log(`   🛒 Pedidos: ${NUMBER_OF_ORDERS}`)
+  console.log(`   📋 Itens totais: ${NUMBER_OF_ORDERS * NUMBER_OF_ITEMS_PER_ORDER}`)
+  
+  // Contagens reais do banco
+  const userCount = await prisma.user.count()
+  const productCount = await prisma.product.count()
+  const orderCount = await prisma.order.count()
+  const orderItemCount = await prisma.orderItem.count()
+  
+  console.log('\n📊 Contagens reais do banco:')
+  console.log(`   👥 Usuários: ${userCount}`)
+  console.log(`   📦 Produtos: ${productCount}`)
+  console.log(`   🛒 Pedidos: ${orderCount}`)
+  console.log(`   📋 Itens de pedido: ${orderItemCount}`)
 }
 
 main()

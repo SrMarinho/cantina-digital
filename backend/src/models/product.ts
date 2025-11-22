@@ -7,19 +7,19 @@ class Product {
     return await prisma.product.findMany();
   }
 
-  static async create(name: string, basePrice: number, isAvailable: boolean = true, description?: string, imageUrl?: string) {
+  static async create(nome: string, descricao: string, preco: number, disponivel: boolean = true, imagem?: string) {
     return await prisma.product.create({
       data: {
-        name,
-        basePrice,
-        isAvailable,
-        description,
-        imageUrl,
+        nome,
+        preco,
+        disponivel,
+        descricao,
+        imagem,
       },
     });
   }
   
-  static async findByPk(id: number) {
+  static async findByPk(id: string) {
     return await prisma.product.findUnique({
       where: {
         id
@@ -27,16 +27,20 @@ class Product {
     })
   }
 
-  static async update(id: number, data: Partial<{ name: string; price: number; description: string; isAvailable: boolean; imageUrl: string;}>) {
-    return await prisma.product.updateMany({
-      where: {
-        id,
-      },
+  static async update(id: string, data: { 
+    nome?: string; 
+    descricao?: string; 
+    preco?: number;
+    disponivel?: boolean; 
+    imagem?: string;
+  }) {
+    return await prisma.product.update({
+      where: { id },
       data
     });
   }
 
-  static async delete(id: number) {
+  static async delete(id: string) {
     return await prisma.product.delete({
       where: {
         id,

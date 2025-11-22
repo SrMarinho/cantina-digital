@@ -9,7 +9,7 @@ class User {
     return await prisma.user.findMany();
   }
 
-  static async createUser(name: string, email: string, password: string, schoolId?: number) {
+  static async createUser(nome: string, email: string, password: string) {
 
     const secretKey = process.env.JWT_SECRET || 'default_secret_key';
 
@@ -17,15 +17,14 @@ class User {
 
     return await prisma.user.create({
       data: {
-        name,
+        nome,
         email,
-        password: hashedPassword,
-        schoolId
+        senha_hash: hashedPassword,
       },
     });
   }
   
-  static async findByPk(id: number) {
+  static async findByPk(id: string) {
     return await prisma.user.findUnique({
       where: {
         id
