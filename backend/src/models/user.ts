@@ -1,5 +1,6 @@
 import { PrismaClient } from "../generated/prisma/client";
 import bcrypt from 'bcrypt';
+import { hashPassword, comparePassword } from "../utils/password.utils";
 
 
 const prisma = new PrismaClient();
@@ -9,17 +10,12 @@ class User {
     return await prisma.user.findMany();
   }
 
-  static async createUser(nome: string, email: string, password: string) {
-
-    const secretKey = process.env.JWT_SECRET || 'default_secret_key';
-
-    const hashedPassword = await bcrypt.hash(password + secretKey, 10);
-
+  static async createUser(nome: string, email: string, senha: string) {
     return await prisma.user.create({
       data: {
         nome,
         email,
-        senha_hash: hashedPassword,
+        senha_hash: senha,
       },
     });
   }

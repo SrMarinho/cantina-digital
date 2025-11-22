@@ -30,7 +30,6 @@ class UsersController {
 
         try {
             const newUser = await User.createUser(name, email, password);
-            console.log(newUser);
             res.status(201).json({
                 success: true,
                 data: {

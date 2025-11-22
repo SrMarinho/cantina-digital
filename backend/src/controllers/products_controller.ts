@@ -15,7 +15,7 @@ class ProductsController {
     static async getById(request: Request, response: Response): Promise<Response> {
         try {
             const { id } = request.params;
-            const product = await Product.findByPk(Number(id));
+            const product = await Product.findByPk(id.toString());
             
             if (!product) {
                 return response.status(404).json({ error: 'Product not found' });
@@ -29,7 +29,6 @@ class ProductsController {
 
     static async create(request: Request, response: Response): Promise<Response> {
         try {
-            console.log("Creating product with data:", request.body);
             const { name, price, description, isAvailable, imageUrl } = request.body;
             const product = await Product.create(name, price, isAvailable, description, imageUrl);
             return response.status(201).json(product);
@@ -44,7 +43,7 @@ class ProductsController {
         try {
             const { id } = request.params;
             const data = request.body;
-            const product = await Product.update(Number(id), data);
+            const product = await Product.update(id.toString(), data);
             return response.json(product);
         } catch (error) {
             return response.status(500).json({ error: 'Internal server error' });
@@ -54,7 +53,7 @@ class ProductsController {
     static async delete(request: Request, response: Response): Promise<Response> {
         try {
             const { id } = request.params;
-            await Product.delete(Number(id));
+            await Product.delete(id.toString());
             return response.status(204).send();
         } catch (error) {
             return response.status(500).json({ error: 'Internal server error' });

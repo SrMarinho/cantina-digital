@@ -24,8 +24,6 @@ class AuthMiddleware {
 
             const decoded = jwt.verify(token, secret)
 
-            console.debug("Token verificado com sucesso:", decoded)
-
             request.user = decoded
 
             next()

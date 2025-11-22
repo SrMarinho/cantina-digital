@@ -26,15 +26,17 @@ async function main() {
 
   // 1. Criar Usuários
   console.log('👤 Criando usuários...')
-  const hashedPassword = await hashPassword(DEFAULT_PASSWORD)
-
-  const usersData = Array.from({ length: NUMBER_OF_USERS }, (_, i) => ({
-    nome: `Usuário ${i + 1}`,
-    email: `usuario${i + 1}@email.com`,
-    senha_hash: hashedPassword,
-    matricula: i % 3 === 0 ? null : `MAT${String(i + 1).padStart(5, '0')}`, // 1/3 sem matrícula
-    created_at: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)) // Datas escalonadas
-  }))
+  let usersData: any = []
+  for (let index = 0; index < NUMBER_OF_USERS; index++) {
+    const hashedPassword = await hashPassword(DEFAULT_PASSWORD);
+    const user = {
+      nome: `Usuário ${index + 1}`,
+      email: `usuario${index + 1}@email.com`,
+      senha_hash: hashedPassword,
+      matricula: index % 3 === 0 ? null : `MAT${String(index + 1).padStart(5, '0')}`,
+    }
+    usersData.push(user)
+  }
 
   await prisma.user.createMany({ data: usersData })
   const users = await prisma.user.findMany()

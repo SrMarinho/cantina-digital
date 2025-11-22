@@ -1,12 +1,13 @@
 import { UserService } from "./user_service";
-import { generateToken, verifyToken } from "../utils/jwt.utils";
+import { generateToken } from "../utils/jwt.utils";
 import { hashPassword, comparePassword } from "../utils/password.utils";
 
 export class AuthService {
   static async register(userData: {
     email: string;
-    password: string;
-    name: string;
+    senha: string;
+    nome: string;
+    matricula?: string;
   }) {
     // Verificar se usuário já existe
     const existingUser = await UserService.getUserByEmail(userData.email);
@@ -14,15 +15,14 @@ export class AuthService {
       throw new Error("User with this email already exists");
     }
 
-    // Hash da senha
-    const hashedPassword = await hashPassword(userData.password);
-    console.log(hashPassword)
+    const hashedPassword = await hashPassword(userData.senha);
 
     // Criar usuário
     const user = await UserService.createUser({
       ...userData,
-      password: hashedPassword
+      senha: hashedPassword
     });
+
 
     // Gerar token JWT
     const token = generateToken({ 
@@ -30,8 +30,8 @@ export class AuthService {
       email: user.email 
     });
 
-    const user_return  = {
-      userId: (user.id).toString(),
+    const user_return = {
+      userId: user.id.toString(),
       message: "Usuário registrado com sucesso",
     }
 
@@ -41,15 +41,16 @@ export class AuthService {
     };
   }
 
-  static async login(email: string, password: string) {
+  static async login(email: string, senha: string) {
     // Buscar usuário
     const user = await UserService.getUserByEmail(email);
     if (!user) {
       throw new Error("Invalid credentials");
     }
 
-    // Validar senha
-    const isPasswordValid = await comparePassword(password, user.senha_hash);
+
+    const isPasswordValid = await comparePassword(senha, user.senha_hash);
+
     if (!isPasswordValid) {
       throw new Error("Invalid credentials");
     }
@@ -60,8 +61,8 @@ export class AuthService {
       email: user.email 
     });
 
-    const user_return  = {
-      userId: (user.id).toString(),
+    const user_return = {
+      userId: user.id.toString(),
       nome: user.nome,
       email: user.email,
     }
@@ -71,34 +72,4 @@ export class AuthService {
       token
     };
   }
-
-  static async refreshToken(oldToken: string) {
-    try {
-      const decoded = verifyToken(oldToken);
-      
-      // Buscar usuário atualizado
-      const user = await UserService.getUserByEmail(decoded.email);
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      // Gerar novo token
-      const newToken = generateToken({ 
-        userId: user.id, 
-        email: user.email 
-      });
-
-      return { token: newToken };
-    } catch (error) {
-      throw new Error("Invalid token");
-    }
-  }
-
-  static async logout(token: string) {
-    // Aqui você pode adicionar lógica para blacklist tokens
-    // Ou simplesmente o cliente remove o token do storage
-    return { success: true };
-  }
 }
-
-export default AuthService;

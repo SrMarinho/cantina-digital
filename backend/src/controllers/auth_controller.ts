@@ -4,18 +4,18 @@ import { AuthService } from "../services/auth_service";
 class AuthController {
   static async register(request: Request, response: Response): Promise<void> {
     try {
-      const { email, password, name } = request.body;
+      const { email, senha, nome, matricula } = request.body;
 
       // Validações básicas
-      if (!email || !password || !name) {
+      if (!email || !senha || !nome) {
         response.status(400).json({
           success: false,
-          error: "Email, password and name are required"
+          error: "Email, senha e nome são obrigatórios"
         });
         return;
       }
 
-      const result = await AuthService.register({ email, password, name });
+      const result = await AuthService.register({ email, senha, nome, matricula });
 
       response.status(201).json(result);
     } catch (error: any) {
@@ -28,65 +28,19 @@ class AuthController {
 
   static async login(request: Request, response: Response): Promise<void> {
     try {
-      const { email, password } = request.body;
+      const { email, senha } = request.body;
 
-      if (!email || !password) {
+      if (!email || !senha) {
         response.status(400).json({
           success: false,
-          error: "Email and password are required"
+          error: "Email e senha são obrigatórios"
         });
         return;
       }
 
-      const result = await AuthService.login(email, password);
+      const result = await AuthService.login(email, senha);
 
       response.status(200).json(result);
-    } catch (error: any) {
-      response.status(401).json({
-        success: false,
-        error: error.message
-      });
-    }
-  }
-
-  static async logout(request: Request, response: Response): Promise<void> {
-    try {
-      const token = request.header('Authorization')?.replace('Bearer ', '');
-      
-      if (token) {
-        await AuthService.logout(token);
-      }
-
-      response.status(200).json({
-        success: true,
-        message: "Logged out successfully"
-      });
-    } catch (error: any) {
-      response.status(500).json({
-        success: false,
-        error: error.message
-      });
-    }
-  }
-
-  static async refreshToken(request: Request, response: Response): Promise<void> {
-    try {
-      const { token } = request.body;
-
-      if (!token) {
-        response.status(400).json({
-          success: false,
-          error: "Token is required"
-        });
-        return;
-      }
-
-      const result = await AuthService.refreshToken(token);
-
-      response.status(200).json({
-        success: true,
-        data: result
-      });
     } catch (error: any) {
       response.status(401).json({
         success: false,
