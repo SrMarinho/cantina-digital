@@ -25,11 +25,16 @@ class OrderController {
       }
       const { items } = req.body;
 
-      console.log(items);
-      
+      if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Itens do pedido inválidos'
+        });
+      }
 
-      // const order = await OrderService.createOrderWithValidation(user_id, items);
-      const order: any[] = []
+      console.log(items);
+
+      const order = await OrderService.createOrderWithValidation(user_id, items);
 
       res.status(201).json({
         success: true,

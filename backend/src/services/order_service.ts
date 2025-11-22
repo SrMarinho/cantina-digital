@@ -26,6 +26,10 @@ class OrderService {
     const orderItemsData = [];
 
     for (const item of items) {
+      if (!item.product_id || item.quantidade === undefined) {
+        throw new Error("Dados do item do pedido inválidos. product_id e quantidade são obrigatórios");
+      }
+
       const product = await prisma.product.findUnique({
         where: { id: item.product_id }
       });
