@@ -1,20 +1,24 @@
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient, OrderStatus } from "../generated/prisma/client";
 
 const prisma = new PrismaClient();
 
-class Product {
+class Order {
   static async getAll() {
     return await prisma.order.findMany();
   }
 
-  static async create(nome: string, descricao: string, preco: number, disponivel: boolean = true, imagem?: string) {
+  static async create(user_id: string, total: number, status: OrderStatus) {
+
+//   id          String    @id @default(uuid())
+//   user_id     String
+//   data_pedido DateTime  @default(now())
+//   total       Float     // ou Decimal se usar PostgreSQL
+//   status      String
     return await prisma.order.create({
       data: {
-        nome,
-        preco,
-        disponivel,
-        descricao,
-        imagem,
+        user_id,
+        total,
+        status
       },
     });
   }

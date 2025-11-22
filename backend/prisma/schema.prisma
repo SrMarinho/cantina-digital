@@ -40,12 +40,19 @@ model Product {
   @@map("Products")
 }
 
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELED
+}
+
 model Order {
   id          String    @id @default(uuid())
   user_id     String
   data_pedido DateTime  @default(now())
-  total       Float     // ou Decimal se usar PostgreSQL
-  status      String
+  total       Float
+  status      OrderStatus @default(PENDING)
   
   user        User      @relation(fields: [user_id], references: [id])
   orderItems  OrderItem[]

@@ -11,9 +11,6 @@ const NUMBER_OF_ORDERS = 8
 const NUMBER_OF_ITEMS_PER_ORDER = 3
 const DEFAULT_PASSWORD = '123456'
 
-// Status predefinidos para os pedidos
-const ORDER_STATUSES = ['PENDENTE', 'PROCESSANDO', 'ENTREGUE', 'CANCELADO']
-
 async function main() {
   console.log('🌱 Iniciando seed do banco de dados...')
 
@@ -63,9 +60,6 @@ async function main() {
     // Selecionar usuário de forma previsível (cíclica)
     const user = users[i % users.length]
     
-    // Status distribuído de forma previsível
-    const status = ORDER_STATUSES[i % ORDER_STATUSES.length]
-    
     // Data do pedido escalonada (pedidos mais recentes primeiro)
     const data_pedido = new Date(Date.now() - (i * 3 * 24 * 60 * 60 * 1000))
 
@@ -102,7 +96,6 @@ async function main() {
         user_id: user.id,
         data_pedido,
         total: Number(total.toFixed(2)),
-        status,
       }
     })
 
