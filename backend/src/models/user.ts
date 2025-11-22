@@ -1,6 +1,5 @@
 import { PrismaClient } from "../generated/prisma/client";
 import bcrypt from 'bcrypt';
-import { hashPassword, comparePassword } from "../utils/password.utils";
 
 
 const prisma = new PrismaClient();
