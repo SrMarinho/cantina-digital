@@ -32,11 +32,10 @@ class Order {
   }
 
   static async update(id: string, data: { 
-    nome?: string; 
-    descricao?: string; 
-    preco?: number;
-    disponivel?: boolean; 
-    imagem?: string;
+    user_id?: string; 
+    data_pedido?: Date; 
+    total?: number; 
+    status?: OrderStatus;
   }) {
     return await prisma.order.update({
       where: { id },
@@ -53,4 +52,4 @@ class Order {
   }
 }
 
-export default Product
+export default Order
