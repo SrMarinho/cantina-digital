@@ -1,12 +1,35 @@
 import { Request, Response } from 'express';
 import { OrderService } from '../services/order_service';
 
-class OrderController {
-  async createOrder(req: Request, res: Response) {
-    try {
-      const { user_id, items } = req.body;
 
-      const order = await OrderService.createOrderWithValidation(user_id, items);
+interface User {
+  userId: string;
+}
+
+interface UserRequest extends Request {
+  user?: User;
+}
+
+
+class OrderController {
+  async createOrder(req: UserRequest, res: Response) {
+    try {
+      const { user } = req;
+      const user_id = user?.userId;
+
+      if (!user_id) {
+        return res.status(400).json({
+          success: false,
+          error: 'ID do usuário não fornecido'
+        });
+      }
+      const { items } = req.body;
+
+      console.log(items);
+      
+
+      // const order = await OrderService.createOrderWithValidation(user_id, items);
+      const order: any[] = []
 
       res.status(201).json({
         success: true,
@@ -44,9 +67,18 @@ class OrderController {
     }
   }
 
-  async getUserOrders(req: Request, res: Response) {
+  async getUserOrders(req: UserRequest, res: Response) {
     try {
-      const { user_id } = req.params;
+      const { user } = req;
+      const user_id = user?.userId;
+
+      if (!user_id) {
+        return res.status(400).json({
+          success: false,
+          error: 'ID do usuário não fornecido'
+        });
+      }
+      
       const orders = await OrderService.getUserOrders(user_id);
 
       res.json({

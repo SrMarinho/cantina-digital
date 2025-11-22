@@ -21,11 +21,8 @@ class AuthMiddleware {
             if (!secret) {
                 throw new Error("JWT_SECRET não configurado")
             }
-
             const decoded = jwt.verify(token, secret)
-
             request.user = decoded
-
             next()
         } catch (error) {
             return response.status(403).json({message: "Token inválido ou expirado"})        

@@ -51,7 +51,7 @@ model Order {
   id          String    @id @default(uuid())
   user_id     String
   data_pedido DateTime  @default(now())
-  total       Float
+  total       Decimal   @db.Decimal(10, 4)
   status      OrderStatus @default(PENDING)
   
   user        User      @relation(fields: [user_id], references: [id])

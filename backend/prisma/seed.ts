@@ -95,7 +95,7 @@ async function main() {
       data: {
         user_id: user.id,
         data_pedido,
-        total: Number(total.toFixed(2)),
+        total: Number(total.toFixed(4)),
       }
     })
 
