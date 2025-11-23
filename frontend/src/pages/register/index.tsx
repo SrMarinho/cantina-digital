@@ -17,31 +17,20 @@ const Register = () => {
     e.preventDefault();
 
     toast.promise(
-      authService.register({name, email, password})
-      .then(response => {
-        const data = response.data
-        console.log(response);
-        
-        if (!data) {
-          toast.warning("Resposta do servidor sem dados")
+      authService.register({ name, email, password })
+        .then(() => {
+          navigate("/menu");
+        }),
+      {
+        loading: "Criando conta...",
+        success: "Conta criada com sucesso!",
+        error: (error) => {
+          console.log(error);
+          const data = error.response?.data;
+          return data?.error || "Erro ao criar conta. Tente novamente.";
         }
-        if (!data.user) {
-          toast.error("Resposta do servidor sem o usuário")
-        }
-        if (!data.token) {
-          toast.error("Resposta do servidor sem o token")
-        }
-        localStorage.setItem("authToken", data.token)
-        navigate("/menu")
-      })
-      .catch(e => {
-        console.log(e)
-        const data = e.response.data
-        if (data) {
-          toast.error(data.error)
-        }
-      })
-    )
+      }
+    );
   };
 
   return (

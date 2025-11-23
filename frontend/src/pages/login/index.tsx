@@ -17,22 +17,15 @@ const Login = () => {
 
     toast.promise(
       authService.login({ email, password })
-        .then((reponse) => {
-          const data = reponse.data;
-          if (data.token) {
-            localStorage.setItem("authToken", data.token);
-            navigate("/menu");
-          }
-        })
-        .catch((error) => {
+        .then(() => navigate("/menu")),
+      {
+        loading: "Fazendo login...",
+        success: "Login realizado com sucesso!",
+        error: (error) => {
           console.error("Erro ao fazer login:", error);
-          toast.error("Falha no login. Verifique suas credenciais e tente novamente.");
-        })
-    , {
-      loading: "Fazendo login...",
-      success: "Login realizado com sucesso!",
-      error: "Erro ao fazer login.",
-    }
+          return "Falha no login. Verifique suas credenciais e tente novamente.";
+        }
+      }
     );
   };
 

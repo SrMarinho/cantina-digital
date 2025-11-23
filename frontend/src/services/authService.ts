@@ -39,28 +39,33 @@ export class AuthService {
     });
 
     // Salvar token no localStorage
-    if (response.token) {
-      localStorage.setItem('authToken', response.token);
+    if (response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
     }
     
     return response;
   }
 
   async register(userData: RegisterRequest): Promise<RegisterResponse> {
-    return apiClient.post<User>(`${this.basePath}/register`, {
+    const response = await apiClient.post<RegisterResponse>(`${this.basePath}/register`, {
       nome: userData.name,
       email: userData.email,
       senha: userData.password,
     });
+
+    if (response.data.token) {
+      localStorage.setItem('authToken', response.data.token);
+    }
+
+    return response
   }
 
   async logout(): Promise<void> {
     localStorage.removeItem('authToken');
-    // Opcional: chamar endpoint de logout no backend
-    // await apiClient.post(`${this.basePath}/logout`);
   }
 
   async getCurrentUser(): Promise<User> {
+    // TODO 
     return apiClient.get<User>(`${this.basePath}/me`);
   }
 
