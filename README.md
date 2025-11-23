@@ -138,7 +138,7 @@ Server listening on port 3000
 
 A API ficará disponível (por padrão) em:
 
-- `http://localhost:3000/api`
+- `http://localhost:3000`
 
 > Deixe o backend rodando enquanto você executa o frontend.
 
@@ -170,7 +170,7 @@ O frontend utiliza uma variável de ambiente para saber a URL base da API (`API_
 Na pasta `frontend/`, crie um arquivo `.env` com o conteúdo:
 
 ```env
-API_BASE_URL="http://localhost:3000/api"
+API_BASE_URL="http://localhost:3000"
 ```
 
 Ajuste a URL caso você tenha alterado a porta ou o host do backend.
@@ -233,7 +233,7 @@ npx prisma db seed
    - `npm run dev`
 3. **Frontend** (em outro terminal):
    - `cd frontend`
-   - Criar `.env` com `API_BASE_URL` apontando para `http://localhost:3000/api`.
+   - Criar `.env` com `API_BASE_URL` apontando para `http://localhost:3000`.
    - `npm install`
    - `npm run dev`
 4. Acessar `http://localhost:5173` no navegador.
