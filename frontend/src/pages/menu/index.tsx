@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,48 +16,106 @@ interface Product {
 }
 
 const mockProducts: Product[] = [
-  { id: 1, name: "X-Burger Clássico", description: "Hambúrguer, queijo, alface e tomate", price: 15.90, category: "Lanches", image: "🍔" },
-  { id: 2, name: "Pizza Margherita", description: "Molho de tomate, mussarela e manjericão", price: 32.90, category: "Pizzas", image: "🍕" },
-  { id: 3, name: "Suco Natural", description: "Laranja, limão ou maracujá", price: 8.90, category: "Bebidas", image: "🥤" },
-  { id: 4, name: "Salada Caesar", description: "Alface, frango grelhado e molho caesar", price: 18.90, category: "Saladas", image: "🥗" },
-  { id: 5, name: "Açaí 500ml", description: "Açaí com banana e granola", price: 16.90, category: "Sobremesas", image: "🍨" },
-  { id: 6, name: "Sanduíche Natural", description: "Peito de peru, queijo branco e vegetais", price: 12.90, category: "Lanches", image: "🥪" },
+  {
+    id: 1,
+    name: "X-Burger Clássico",
+    description: "Hambúrguer, queijo, alface e tomate",
+    price: 15.9,
+    category: "Lanches",
+    image: "🍔",
+  },
+  {
+    id: 2,
+    name: "Pizza Margherita",
+    description: "Molho de tomate, mussarela e manjericão",
+    price: 32.9,
+    category: "Pizzas",
+    image: "🍕",
+  },
+  {
+    id: 3,
+    name: "Suco Natural",
+    description: "Laranja, limão ou maracujá",
+    price: 8.9,
+    category: "Bebidas",
+    image: "🥤",
+  },
+  {
+    id: 4,
+    name: "Salada Caesar",
+    description: "Alface, frango grelhado e molho caesar",
+    price: 18.9,
+    category: "Saladas",
+    image: "🥗",
+  },
+  {
+    id: 5,
+    name: "Açaí 500ml",
+    description: "Açaí com banana e granola",
+    price: 16.9,
+    category: "Sobremesas",
+    image: "🍨",
+  },
+  {
+    id: 6,
+    name: "Sanduíche Natural",
+    description: "Peito de peru, queijo branco e vegetais",
+    price: 12.9,
+    category: "Lanches",
+    image: "🥪",
+  },
 ];
 
 const Menu = () => {
-  const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
+  const [cart, setCart] = useState<{ product: Product; quantity: number }[]>(
+    []
+  );
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
 
-  const categories = ["Todos", ...Array.from(new Set(mockProducts.map(p => p.category)))];
+  const categories = [
+    "Todos",
+    ...Array.from(new Set(mockProducts.map((p) => p.category))),
+  ];
 
   const addToCart = (product: Product) => {
-    const existingItem = cart.find(item => item.product.id === product.id);
+    const existingItem = cart.find((item) => item.product.id === product.id);
     if (existingItem) {
-      setCart(cart.map(item => 
-        item.product.id === product.id 
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
+      setCart(
+        cart.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
     } else {
       setCart([...cart, { product, quantity: 1 }]);
     }
   };
 
-  const filteredProducts = selectedCategory === "Todos" 
-    ? mockProducts 
-    : mockProducts.filter(p => p.category === selectedCategory);
+  const filteredProducts =
+    selectedCategory === "Todos"
+      ? mockProducts
+      : mockProducts.filter((p) => p.category === selectedCategory);
 
-  const cartTotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  const cartTotal = cart.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  useEffect(() => {
+    document.title = "Menu - Cantina Digital";
+  }, []);
+
+  useEffect(() => {
+    document.title = "Menu - Cantina Digital";
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card border-b shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary">
-            Cantina Digital
-          </h1>
+          <h1 className="text-2xl font-bold text-primary">Cantina Digital</h1>
           <div className="flex items-center gap-3">
             <Link to="/meus-pedidos">
               <Button variant="ghost" size="icon">
@@ -84,7 +143,7 @@ const Menu = () => {
       <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-4 overflow-x-auto">
           <div className="flex gap-2">
-            {categories.map(category => (
+            {categories.map((category) => (
               <Button
                 key={category}
                 variant={selectedCategory === category ? "default" : "outline"}
@@ -101,18 +160,28 @@ const Menu = () => {
       {/* Products Grid */}
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map(product => (
-            <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow animate-fade-in">
+          {filteredProducts.map((product) => (
+            <Card
+              key={product.id}
+              className="overflow-hidden hover:shadow-lg transition-shadow animate-fade-in"
+            >
               <div className="p-6">
                 <div className="text-6xl mb-4 text-center">{product.image}</div>
-                <Badge variant="secondary" className="mb-2">{product.category}</Badge>
+                <Badge variant="secondary" className="mb-2">
+                  {product.category}
+                </Badge>
                 <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                <p className="text-muted-foreground mb-4 text-sm">{product.description}</p>
+                <p className="text-muted-foreground mb-4 text-sm">
+                  {product.description}
+                </p>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-primary">
                     R$ {product.price.toFixed(2)}
                   </span>
-                  <Button onClick={() => addToCart(product)} className="hover-scale">
+                  <Button
+                    onClick={() => addToCart(product)}
+                    className="hover-scale"
+                  >
                     Adicionar
                   </Button>
                 </div>
@@ -126,7 +195,11 @@ const Menu = () => {
       {cartItemCount > 0 && (
         <Link to="/carrinho">
           <div className="fixed bottom-6 right-6 animate-scale-in">
-            <Button size="lg" className="rounded-full shadow-lg h-14 px-6" style={{ background: 'var(--gradient-primary)' }}>
+            <Button
+              size="lg"
+              className="rounded-full shadow-lg h-14 px-6"
+              style={{ background: "var(--gradient-primary)" }}
+            >
               <ShoppingCart className="w-5 h-5 mr-2" />
               Ver Carrinho · R$ {cartTotal.toFixed(2)}
             </Button>
