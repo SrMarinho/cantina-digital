@@ -1,20 +1,20 @@
-import dotenv from 'dotenv';
 import axios from 'axios';
+import type { AxiosInstance } from 'axios';
 
-dotenv.config();
-
-function ApiClient() {
-    if (!process.env.API_BASE_URL) {
-        console.debug('API_BASE_URL is not defined in environment variables.');
+function createApiClient(): AxiosInstance {
+    const baseURL = import.meta.env.VITE_API_BASE_URL;
+    
+    if (!baseURL) {
+        console.warn('API_BASE_URL is not defined in environment variables.');
     }
+    
     return axios.create({
-      baseURL: process.env.API_BASE_URL,
-      timeout: 10000,
+        baseURL: baseURL,
+        timeout: parseInt('3600000'),
         headers: {
-        'Content-Type': 'application/json',
-      },
+            'Content-Type': 'application/json',
+        },
     });
 }
 
-
-export const apiClient = ApiClient();
+export const apiClient = createApiClient();

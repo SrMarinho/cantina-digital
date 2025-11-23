@@ -1,12 +1,43 @@
-import { apiClient } from './api/apiClient';
-import { LoginRequest, LoginResponse, User, ApiResponse } from './api/types';
+import { apiClient } from './apiClient';
+import type { AxiosResponse } from 'axios';
+import type { User } from '../types/user.type';
+
+
+interface LoginResponse extends AxiosResponse {
+  token: string;
+  user: User;
+}
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface RegisterRequest {
+  name: string
+  email: string
+  password: string
+}
+
+interface UserRegisterResponse {
+  userId: string
+  message: string
+}
+
+interface RegisterResponse extends AxiosResponse {
+  user: UserRegisterResponse
+  token: string
+}
 
 export class AuthService {
   private basePath = '/auth';
 
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await apiClient.post<LoginResponse>(`${this.basePath}/login`, credentials);
-    
+    const response = await apiClient.post<LoginResponse>(`${this.basePath}/login`, {
+      email: credentials.email,
+      senha: credentials.password,
+    });
+
     // Salvar token no localStorage
     if (response.token) {
       localStorage.setItem('authToken', response.token);
@@ -15,8 +46,12 @@ export class AuthService {
     return response;
   }
 
-  async register(userData: any): Promise<User> {
-    return apiClient.post<User>(`${this.basePath}/register`, userData);
+  async register(userData: RegisterRequest): Promise<RegisterResponse> {
+    return apiClient.post<User>(`${this.basePath}/register`, {
+      nome: userData.name,
+      email: userData.email,
+      senha: userData.password,
+    });
   }
 
   async logout(): Promise<void> {

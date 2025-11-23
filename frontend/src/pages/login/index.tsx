@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UtensilsCrossed } from "lucide-react";
+import { authService } from "../../services/authService";
+import { toast, Toaster } from "sonner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,9 +14,26 @@ const Login = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - in production this would authenticate with backend
-    localStorage.setItem("isAuthenticated", "true");
-    navigate("/menu");
+
+    toast.promise(
+      authService.login({ email, password })
+        .then((reponse) => {
+          const data = reponse.data;
+          if (data.token) {
+            localStorage.setItem("authToken", data.token);
+            navigate("/menu");
+          }
+        })
+        .catch((error) => {
+          console.error("Erro ao fazer login:", error);
+          toast.error("Falha no login. Verifique suas credenciais e tente novamente.");
+        })
+    , {
+      loading: "Fazendo login...",
+      success: "Login realizado com sucesso!",
+      error: "Erro ao fazer login.",
+    }
+    );
   };
 
   return (
@@ -69,6 +88,7 @@ const Login = () => {
           </form>
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 };
