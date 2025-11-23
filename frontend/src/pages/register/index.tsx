@@ -6,12 +6,22 @@ import { Label } from "@/components/ui/label";
 import { UtensilsCrossed } from "lucide-react";
 import { authService } from "../../services/authService";
 import { toast, Toaster } from "sonner";
+import { useEffect } from "react";
 
 const Register = () => {
   const [name, setName] = useState("123");
   const [email, setEmail] = useState("usuario100@email.com");
   const [password, setPassword] = useState("123456");
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    document.title = "Register - Cantina Digital";
+  }, []);
+
+  useEffect(() => {
+    localStorage.removeItem("authToken")
+  }, []);
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();

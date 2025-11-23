@@ -6,11 +6,20 @@ import { Label } from "@/components/ui/label";
 import { UtensilsCrossed } from "lucide-react";
 import { authService } from "../../services/authService";
 import { toast, Toaster } from "sonner";
+import { useEffect } from "react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Login - Cantina Digital";
+  }, []);
+
+  useEffect(() => {
+    localStorage.removeItem("authToken")
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();

@@ -5,76 +5,29 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, User, Package } from "lucide-react";
+import { toast, Toaster } from "sonner";
+import { productsService } from "../../services/productsService";
 
 interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
+  id: string;
+  nome: string;
+  descricao: string;
+  preco: number;
+  categoria: string;
+  imagem: string;
 }
-
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    name: "X-Burger Clássico",
-    description: "Hambúrguer, queijo, alface e tomate",
-    price: 15.9,
-    category: "Lanches",
-    image: "🍔",
-  },
-  {
-    id: 2,
-    name: "Pizza Margherita",
-    description: "Molho de tomate, mussarela e manjericão",
-    price: 32.9,
-    category: "Pizzas",
-    image: "🍕",
-  },
-  {
-    id: 3,
-    name: "Suco Natural",
-    description: "Laranja, limão ou maracujá",
-    price: 8.9,
-    category: "Bebidas",
-    image: "🥤",
-  },
-  {
-    id: 4,
-    name: "Salada Caesar",
-    description: "Alface, frango grelhado e molho caesar",
-    price: 18.9,
-    category: "Saladas",
-    image: "🥗",
-  },
-  {
-    id: 5,
-    name: "Açaí 500ml",
-    description: "Açaí com banana e granola",
-    price: 16.9,
-    category: "Sobremesas",
-    image: "🍨",
-  },
-  {
-    id: 6,
-    name: "Sanduíche Natural",
-    description: "Peito de peru, queijo branco e vegetais",
-    price: 12.9,
-    category: "Lanches",
-    image: "🥪",
-  },
-];
 
 const Menu = () => {
   const [cart, setCart] = useState<{ product: Product; quantity: number }[]>(
     []
   );
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
+  const [productsList, setProductsList] = useState<Product[]>([]);
+  const [filteredProductsList, setFilteredProductsList] = useState<Product[]>([]);
 
   const categories = [
     "Todos",
-    ...Array.from(new Set(mockProducts.map((p) => p.category))),
+    ...Array.from(new Set(productsList.map((p) => p.categoria))),
   ];
 
   const addToCart = (product: Product) => {
@@ -94,24 +47,46 @@ const Menu = () => {
 
   const filteredProducts =
     selectedCategory === "Todos"
-      ? mockProducts
-      : mockProducts.filter((p) => p.category === selectedCategory);
+      ? productsList
+      : productsList.filter((p) => p.categoria === selectedCategory);
 
   const cartTotal = cart.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + item.product.preco * item.quantity,
     0
   );
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  function handleUserMenu() {
+      toast.info("Menu do usuário em desenvolvimento")
+  }
+
   useEffect(() => {
     document.title = "Menu - Cantina Digital";
   }, []);
 
   useEffect(() => {
-    document.title = "Menu - Cantina Digital";
+    toast.promise(
+      productsService.getAll()
+      .then((response) => {
+        const data = response.data as Array<Product>
+        setProductsList([])
+        data.map((product) => {
+        setProductsList(prev => [...prev, {...product, categoria: "", imagem: ""}])
+        })
+      })
+      , {
+        loading: "Buscando produtos...",
+        error: (error) => {
+          console.log(error);
+          const data = error.response?.data;
+          return data?.message || "Erro ao buscar produtos. Tente novamente.";
+        }
+      }
+    );
   }, []);
   return (
     <div className="min-h-screen bg-background">
+      <Toaster position="top-right"/>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card border-b shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -132,7 +107,7 @@ const Menu = () => {
                 )}
               </Button>
             </Link>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => handleUserMenu()}>
               <User className="w-5 h-5" />
             </Button>
           </div>
@@ -166,17 +141,17 @@ const Menu = () => {
               className="overflow-hidden hover:shadow-lg transition-shadow animate-fade-in"
             >
               <div className="p-6">
-                <div className="text-6xl mb-4 text-center">{product.image}</div>
+                <div className="text-6xl mb-4 text-center">{product.imagem}</div>
                 <Badge variant="secondary" className="mb-2">
-                  {product.category}
+                  {product.categoria}
                 </Badge>
-                <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+                <h3 className="text-xl font-bold mb-2">{product.nome}</h3>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  {product.description}
+                  {product.descricao}
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-primary">
-                    R$ {product.price.toFixed(2)}
+                    R$ {product.preco.toFixed(2)}
                   </span>
                   <Button
                     onClick={() => addToCart(product)}

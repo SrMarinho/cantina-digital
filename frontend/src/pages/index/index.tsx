@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { UtensilsCrossed } from "lucide-react";
+import { useEffect } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = "Cantina Digital";
+  }, []);
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary">
       <div className="text-center animate-fade-in p-8">

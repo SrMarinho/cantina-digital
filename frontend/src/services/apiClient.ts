@@ -8,13 +8,36 @@ function createApiClient(): AxiosInstance {
         console.warn('API_BASE_URL is not defined in environment variables.');
     }
     
-    return axios.create({
+    const client = axios.create({
         baseURL: baseURL,
-        timeout: parseInt('3600000'),
+        timeout: 360000,
         headers: {
             'Content-Type': 'application/json',
         },
     });
+
+    // Interceptor para adicionar token automaticamente
+    client.interceptors.request.use((config) => {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
+
+    // Interceptor para tratar token expirado
+    client.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            if (error.response?.status === 401 || error.response?.status === 403) {
+                // Token expirou ou é inválido
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
+            return Promise.reject(error);
+        }
+    );
+    return client;
 }
 
 export const apiClient = createApiClient();
