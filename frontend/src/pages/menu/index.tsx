@@ -8,6 +8,14 @@ import { ShoppingCart, User, Package } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { productsService } from "../../services/productsService";
 import { useCart } from "../../hooks/useCart";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/authService";
 
 interface Product {
   id: string;
@@ -19,11 +27,13 @@ interface Product {
 }
 
 const Menu = () => {
+  const navigate = useNavigate()
   const {
     cart,
     addToCart,
     cartTotal,
-    cartItemCount
+    cartItemCount,
+    clearCart
   } = useCart();
   
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
@@ -40,8 +50,10 @@ const Menu = () => {
       ? productsList
       : productsList.filter((p) => p.categoria === selectedCategory);
 
-  function handleUserMenu() {
-      toast.info("Menu do usuário em desenvolvimento")
+  function handleLogout() {
+    authService.logout()
+    clearCart()
+    navigate("/")
   }
 
   useEffect(() => {
@@ -114,9 +126,16 @@ const Menu = () => {
                 )}
               </Button>
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => handleUserMenu()}>
-              <User className="w-5 h-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon"><User className="w-5 h-5" /></Button>
+              </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-52" align="start">
+                  <DropdownMenuItem onClick={() => handleLogout()}>
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
           </div>
         </div>
       </header>

@@ -51,7 +51,7 @@ const Cart = () => {
         },
         error: (error) => {
           console.error("Erro ao fazer login:", error);
-          return "Falha no pedido. Verifique suas credenciais e tente novamente.";
+          return error.response.data.error || "Falha no pedido. Verifique suas credenciais e tente novamente.";
         }
       }
     );
