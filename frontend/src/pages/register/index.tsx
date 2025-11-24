@@ -9,9 +9,9 @@ import { toast, Toaster } from "sonner";
 import { useEffect } from "react";
 
 const Register = () => {
-  const [name, setName] = useState("123");
-  const [email, setEmail] = useState("usuario100@email.com");
-  const [password, setPassword] = useState("123456");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
 
