@@ -1,9 +1,7 @@
 export interface OrderItem {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  image?: string
-  description?: string
-  category?: string
+  product_id: string
+  quantidade: number
+}
+export interface Order {
+  items: OrderItem[]
 }

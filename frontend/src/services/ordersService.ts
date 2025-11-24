@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import type { Order, OrderItem } from "../../types/order.types";
 
 
 class OrdersService {
@@ -12,8 +13,8 @@ class OrdersService {
     return await apiClient.get(`${this.basePath}/${id}`)
   }
 
-  async post() {
-    return await apiClient.post(this.basePath, {})
+  async post(order: Order) {
+    return await apiClient.post(this.basePath, order)
   }
 }
 

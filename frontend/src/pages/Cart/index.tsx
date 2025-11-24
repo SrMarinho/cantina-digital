@@ -5,6 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "../../hooks/useCart";
+import { ordersService } from "../../services/ordersService";
+import type { Order, OrderItem } from "../../types/order.types";
+import { toast, Toaster } from "sonner";
+
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -21,9 +25,36 @@ const Cart = () => {
   const total = cartTotal + deliveryFee;
 
   const handleCheckout = () => {
-    // Aqui você pode adicionar lógica para finalizar o pedido
-    // Por enquanto, apenas navega para a página de pedidos
-    navigate("/meus-pedidos");
+    const order: Order = {
+      items: []
+    }
+    cart.map(item => {
+      order.items.push({
+        product_id: item.product.id,
+        quantidade: item.quantity
+      } as OrderItem)
+    })
+    
+    toast.promise(
+      ordersService.post(order)
+      .then(response => response.data)
+      .then(data => {
+        if (data.success) {
+          clearCart()
+        }
+      }),
+      {
+        loading: "Fazendo pedido...",
+        success: () => {
+          setTimeout(() => navigate("/menu"), 3000)
+          return "Pedido realizado com sucesso!"
+        },
+        error: (error) => {
+          console.error("Erro ao fazer login:", error);
+          return "Falha no pedido. Verifique suas credenciais e tente novamente.";
+        }
+      }
+    );
   };
 
   const handleIncrement = (productId: string) => {
@@ -42,6 +73,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      <Toaster position="top-right"/>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card border-b shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
@@ -142,10 +174,6 @@ const Cart = () => {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal ({cartItemCount} {cartItemCount === 1 ? 'item' : 'itens'})</span>
                   <span>R$ {cartTotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Taxa de entrega</span>
-                  <span>R$ {deliveryFee.toFixed(2)}</span>
                 </div>
                 <Separator className="my-3" />
                 <div className="flex justify-between text-lg font-bold">
