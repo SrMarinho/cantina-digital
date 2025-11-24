@@ -210,7 +210,7 @@ Comandos Prisma mais comuns:
 
 ```bash
 # Aplicar migrations em desenvolvimento
-npx prisma migrate dev
+npx prisma migrate deploy
 
 # Atualizar o banco a partir do schema sem criar migrations (dev)
 npx prisma db push
@@ -235,12 +235,12 @@ npx prisma db seed
    - `cd backend`
    - Criar `.env` com `DATABASE_URL`, `JWT_SECRET` e `PORT`.
    - `npm install`
-   - `npx prisma migrate dev`
+   - `npx prisma migrate deploy`
    - `npx prisma db seed`
    - `npm run dev`
 3. **Frontend** (em outro terminal):
    - `cd frontend`
-   - Criar `.env` com `API_BASE_URL` apontando para `http://localhost:3000`.
+   - Criar `.env` com `VITE_API_BASE_URL` apontando para `http://localhost:3000`.
    - `npm install`
    - `npm run dev`
 4. Acessar `http://localhost:5173` no navegador.
