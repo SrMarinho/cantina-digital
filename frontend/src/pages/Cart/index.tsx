@@ -46,7 +46,7 @@ const Cart = () => {
       {
         loading: "Fazendo pedido...",
         success: () => {
-          setTimeout(() => navigate("/menu"), 3000)
+          setTimeout(() => navigate("/menu"), 2000)
           return "Pedido realizado com sucesso!"
         },
         error: (error) => {
