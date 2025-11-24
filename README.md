@@ -173,12 +173,12 @@ npm install
 
 ### 5.3. Configurar variáveis de ambiente do frontend
 
-O frontend utiliza uma variável de ambiente para saber a URL base da API (`API_BASE_URL`) dentro de `src/services/apiClient.ts`.
+O frontend utiliza uma variável de ambiente para saber a URL base da API (`VITE_API_BASE_URL`) dentro de `src/services/apiClient.ts`.
 
 Na pasta `frontend/`, crie um arquivo `.env` com o conteúdo:
 
 ```env
-API_BASE_URL="http://localhost:3000"
+VITE_API_BASE_URL="http://localhost:3000"
 ```
 
 Ajuste a URL caso você tenha alterado a porta ou o host do backend.
