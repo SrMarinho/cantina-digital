@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
+import { Button } from "../components/ui/button";
 import { UtensilsCrossed } from "lucide-react";
 import { useEffect } from "react";
 
-const Index = () => {
+const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,4 +44,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Home;
