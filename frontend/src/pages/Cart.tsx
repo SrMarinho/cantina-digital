@@ -20,7 +20,7 @@ const Cart = () => {
     cartItemCount
   } = useCart();
 
-  const deliveryFee = 5.00;
+  const deliveryFee = 0.00;
   const total = cartTotal + deliveryFee;
 
   const handleCheckout = () => {
