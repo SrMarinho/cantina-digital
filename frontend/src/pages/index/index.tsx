@@ -39,13 +39,6 @@ const Index = () => {
             Criar Conta
           </Button>
         </div>
-        <Button 
-          variant="link" 
-          onClick={() => navigate("/menu")}
-          className="mt-4"
-        >
-          Ver cardápio sem login
-        </Button>
       </div>
     </div>
   );
