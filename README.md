@@ -95,8 +95,8 @@ Campos importantes:
 Ainda dentro da pasta `backend/`, rode:
 
 ```bash
-# Criar as tabelas no banco de desenvolvimento (e gerar a pasta de migrations)
-npx prisma migrate dev
+# Criar as tabelas no banco de desenvolvimento
+npx prisma migrate deploy
 ```
 
 Caso queira apenas empurrar o schema atual para o banco sem criar migrations (apenas para ambiente de desenvolvimento), você pode usar:
@@ -121,6 +121,14 @@ Isso irá:
 
 - Limpar dados existentes das tabelas relacionadas (Users, Products, Orders, OrderItems)
 - Criar usuários, produtos e pedidos de exemplo
+
+Para fazer login na aplicação, use as seguintes credenciais:
+
+Email: usuario1@email.com
+
+Senha: 123456
+
+O seed cria vários usuários
 
 ### 4.7. Rodar o servidor backend em modo desenvolvimento
 
