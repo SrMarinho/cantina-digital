@@ -160,7 +160,6 @@ A API ficará disponível (por padrão) em:
 - Vite
 - Tailwind CSS
 - Axios
-- Zustand (gerenciamento de estado)
 
 ### 5.2. Instalar dependências do frontend
 
