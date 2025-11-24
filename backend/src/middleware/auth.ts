@@ -25,7 +25,7 @@ class AuthMiddleware {
             request.user = decoded
             next()
         } catch (error) {
-            return response.status(403).json({message: "Token inválido ou expirado"})        
+            return response.status(401).json({message: "Token inválido ou expirado"})        
         }
     }
 }

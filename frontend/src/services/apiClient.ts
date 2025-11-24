@@ -29,7 +29,7 @@ function createApiClient(): AxiosInstance {
     client.interceptors.response.use(
         (response) => response,
         async (error) => {
-            if (error.response?.status === 401 || error.response?.status === 403) {
+            if (error.response?.status === 401) {
                 // Token expirou ou é inválido
                 localStorage.removeItem('authToken');
                 window.location.href = '/login';
