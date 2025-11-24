@@ -18,7 +18,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/app.ts",
     "build": "tsc",
-    "format": "prettier --write ./src/**/*.ts"
+    "format": "prettier --write ./src/**/*.ts",
+    "generate:prod": "cp prisma/schema.postgresql.prisma prisma/schema.prisma && npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
