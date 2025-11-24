@@ -32,7 +32,7 @@ interface RegisterResponse extends AxiosResponse {
 export class AuthService {
   private basePath = '/auth';
 
-  async login(credentials: LoginRequest): Promise<LoginResponse> {
+  async login(credentials: LoginRequest): Promise<LoginResponse | AxiosResponse> {
     const response = await apiClient.post<LoginResponse>(`${this.basePath}/login`, {
       email: credentials.email,
       senha: credentials.password,
@@ -46,7 +46,7 @@ export class AuthService {
     return response;
   }
 
-  async register(userData: RegisterRequest): Promise<RegisterResponse> {
+  async register(userData: RegisterRequest): Promise<RegisterResponse | AxiosResponse> {
     const response = await apiClient.post<RegisterResponse>(`${this.basePath}/register`, {
       nome: userData.name,
       email: userData.email,
@@ -64,7 +64,7 @@ export class AuthService {
     localStorage.removeItem('authToken');
   }
 
-  async getCurrentUser(): Promise<User> {
+  async getCurrentUser(): Promise<User | AxiosResponse> {
     // TODO 
     return apiClient.get<User>(`${this.basePath}/me`);
   }

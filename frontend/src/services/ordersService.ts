@@ -1,5 +1,5 @@
 import { apiClient } from "./apiClient";
-import type { Order, OrderItem } from "../../types/order.types";
+import type { Order } from "../types/order.types";
 
 
 class OrdersService {

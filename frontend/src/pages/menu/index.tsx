@@ -29,7 +29,6 @@ interface Product {
 const Menu = () => {
   const navigate = useNavigate()
   const {
-    cart,
     addToCart,
     cartTotal,
     cartItemCount,
