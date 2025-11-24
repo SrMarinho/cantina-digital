@@ -3,58 +3,62 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, CheckCircle, XCircle } from "lucide-react";
+import { ordersService } from "../../services/ordersService";
+import { useEffect, useState } from "react";
 
-interface Order {
-  id: number;
-  date: string;
-  status: "pending" | "completed" | "cancelled";
-  items: { name: string; quantity: number; price: number }[];
-  total: number;
+interface Product {
+  id: string
+  nome: string
+  descricao: string
+  preco: number
+  disponivel: string
+  imagem: string
 }
 
-const mockOrders: Order[] = [
-  {
-    id: 1,
-    date: "2025-11-22 14:30",
-    status: "completed",
-    items: [
-      { name: "X-Burger Clássico", quantity: 1, price: 15.90 },
-      { name: "Batata Frita", quantity: 1, price: 10.90 },
-    ],
-    total: 31.80,
-  },
-  {
-    id: 2,
-    date: "2025-11-21 12:15",
-    status: "completed",
-    items: [
-      { name: "Pizza Margherita", quantity: 1, price: 32.90 },
-      { name: "Refrigerante", quantity: 2, price: 5.90 },
-    ],
-    total: 44.70,
-  },
-  {
-    id: 3,
-    date: "2025-11-20 19:45",
-    status: "pending",
-    items: [
-      { name: "Salada Caesar", quantity: 1, price: 18.90 },
-    ],
-    total: 18.90,
-  },
-];
+interface OrderItem {
+  id: string
+  order_id: string
+  preco_unitario: number
+  product: Product
+  product_id: string
+  quantidade: number
+}
+
+interface Order {
+  id: string
+  user_id: string
+  orderItems: OrderItem[]
+  status: string
+  total: number
+  data_pedido: string
+}
 
 const Orders = () => {
+  const [ordersList, setOrdersList] = useState<Order[]>([])
+
   const getStatusConfig = (status: Order["status"]) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case "pending":
         return { label: "Em andamento", variant: "default" as const, icon: Clock };
+      case "processing":
+        return { label: "Procesando", variant: "default" as const, icon: Clock };
       case "completed":
         return { label: "Concluído", variant: "secondary" as const, icon: CheckCircle };
       case "cancelled":
         return { label: "Cancelado", variant: "destructive" as const, icon: XCircle };
+      default:
+        return { label: "Sem status", variant: "default" as const, icon: Clock };
     }
   };
+
+  useEffect(() => {
+    ordersService.getAll()
+    .then(reponse => reponse.data)
+    .then(data => {
+      const orders = data.data as Order[]
+      setOrdersList(orders)
+    })
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,7 +75,7 @@ const Orders = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
-        {mockOrders.length === 0 ? (
+        {ordersList.length === 0 ? (
           <Card className="p-12 text-center">
             <p className="text-muted-foreground mb-4">Você ainda não fez nenhum pedido</p>
             <Link to="/menu">
@@ -80,7 +84,7 @@ const Orders = () => {
           </Card>
         ) : (
           <div className="space-y-4">
-            {mockOrders.map(order => {
+            {ordersList.map(order => {
               const statusConfig = getStatusConfig(order.status);
               const StatusIcon = statusConfig.icon;
 
@@ -89,7 +93,7 @@ const Orders = () => {
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-bold text-lg">Pedido #{order.id}</h3>
-                      <p className="text-sm text-muted-foreground">{order.date}</p>
+                      <p className="text-sm text-muted-foreground">{order.data_pedido}</p>
                     </div>
                     <Badge variant={statusConfig.variant} className="flex items-center gap-1">
                       <StatusIcon className="w-3 h-3" />
@@ -98,13 +102,13 @@ const Orders = () => {
                   </div>
 
                   <div className="space-y-2 mb-4">
-                    {order.items.map((item, index) => (
+                    {order.orderItems.map((item, index) => (
                       <div key={index} className="flex justify-between text-sm">
                         <span>
-                          {item.quantity}x {item.name}
+                          {item.quantidade}x {item.product.nome}
                         </span>
                         <span className="text-muted-foreground">
-                          R$ {(item.price * item.quantity).toFixed(2)}
+                          R$ {(item.preco_unitario * item.quantidade).toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -113,7 +117,7 @@ const Orders = () => {
                   <div className="pt-4 border-t flex justify-between items-center">
                     <span className="font-semibold">Total</span>
                     <span className="text-xl font-bold text-primary">
-                      R$ {order.total.toFixed(2)}
+                      R$ {Number(order.total).toFixed(2)}
                     </span>
                   </div>
                 </Card>
