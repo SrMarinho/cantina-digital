@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, User, Package } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { productsService } from "../../services/productsService";
+import { useCart } from "../../hooks/useCart";
 
 interface Product {
   id: string;
@@ -18,43 +19,26 @@ interface Product {
 }
 
 const Menu = () => {
-  const [cart, setCart] = useState<{ product: Product; quantity: number }[]>(
-    []
-  );
+  const {
+    cart,
+    addToCart,
+    cartTotal,
+    cartItemCount
+  } = useCart();
+  
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
   const [productsList, setProductsList] = useState<Product[]>([]);
-  const [filteredProductsList, setFilteredProductsList] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const categories = [
     "Todos",
     ...Array.from(new Set(productsList.map((p) => p.categoria))),
   ];
 
-  const addToCart = (product: Product) => {
-    const existingItem = cart.find((item) => item.product.id === product.id);
-    if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCart([...cart, { product, quantity: 1 }]);
-    }
-  };
-
   const filteredProducts =
     selectedCategory === "Todos"
       ? productsList
       : productsList.filter((p) => p.categoria === selectedCategory);
-
-  const cartTotal = cart.reduce(
-    (sum, item) => sum + item.product.preco * item.quantity,
-    0
-  );
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   function handleUserMenu() {
       toast.info("Menu do usuário em desenvolvimento")
@@ -65,25 +49,48 @@ const Menu = () => {
   }, []);
 
   useEffect(() => {
-    toast.promise(
-      productsService.getAll()
-      .then((response) => {
-        const data = response.data as Array<Product>
-        setProductsList([])
-        data.map((product) => {
-        setProductsList(prev => [...prev, {...product, categoria: "", imagem: ""}])
-        })
-      })
-      , {
-        loading: "Buscando produtos...",
-        error: (error) => {
-          console.log(error);
-          const data = error.response?.data;
-          return data?.message || "Erro ao buscar produtos. Tente novamente.";
-        }
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        await toast.promise(
+          productsService.getAll().then((response) => {
+            const data = response.data as Array<Product>;
+            setProductsList(data.map(product => ({
+              ...product,
+              categoria: product.categoria || "",
+              imagem: product.imagem || ""
+            })));
+          }),
+          {
+            loading: "Buscando produtos...",
+            error: (error) => {
+              console.log(error);
+              const data = error.response?.data;
+              return data?.message || "Erro ao buscar produtos. Tente novamente.";
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Erro ao buscar produtos:", error);
+      } finally {
+        setIsLoading(false);
       }
-    );
+    };
+
+    fetchProducts();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Carregando produtos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Toaster position="top-right"/>
@@ -134,36 +141,42 @@ const Menu = () => {
 
       {/* Products Grid */}
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <Card
-              key={product.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow animate-fade-in"
-            >
-              <div className="p-6">
-                <div className="text-6xl mb-4 text-center">{product.imagem}</div>
-                <Badge variant="secondary" className="mb-2">
-                  {product.categoria}
-                </Badge>
-                <h3 className="text-xl font-bold mb-2">{product.nome}</h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  {product.descricao}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">
-                    R$ {product.preco.toFixed(2)}
-                  </span>
-                  <Button
-                    onClick={() => addToCart(product)}
-                    className="hover-scale"
-                  >
-                    Adicionar
-                  </Button>
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Nenhum produto encontrado.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <Card
+                key={product.id}
+                className="overflow-hidden hover:shadow-lg transition-shadow animate-fade-in"
+              >
+                <div className="p-6">
+                  <div className="text-6xl mb-4 text-center">🍽</div>
+                  <Badge variant="secondary" className="mb-2">
+                    {product.categoria}
+                  </Badge>
+                  <h3 className="text-xl font-bold mb-2">{product.nome}</h3>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    {product.descricao}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-primary">
+                      R$ {product.preco.toFixed(2)}
+                    </span>
+                    <Button
+                      onClick={() => addToCart(product)}
+                      className="hover-scale"
+                    >
+                      Adicionar
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Floating Cart Button */}
@@ -172,8 +185,7 @@ const Menu = () => {
           <div className="fixed bottom-6 right-6 animate-scale-in">
             <Button
               size="lg"
-              className="rounded-full shadow-lg h-14 px-6"
-              style={{ background: "var(--gradient-primary)" }}
+              className="rounded-full shadow-lg h-14 px-6 bg-primary"
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
               Ver Carrinho · R$ {cartTotal.toFixed(2)}
