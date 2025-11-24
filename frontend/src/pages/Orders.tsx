@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, CheckCircle, XCircle } from "lucide-react";
-import { ordersService } from "../../services/ordersService";
+import { ordersService } from "../services/ordersService";
 import { useEffect, useState } from "react";
 
 interface Product {

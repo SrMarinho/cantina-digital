@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
-import { useCart } from "../../hooks/useCart";
-import { ordersService } from "../../services/ordersService";
-import type { Order, OrderItem } from "../../types/order.types";
+import { useCart } from "../hooks/useCart";
+import { ordersService } from "../services/ordersService";
+import type { Order, OrderItem } from "../types/order.types";
 import { toast, Toaster } from "sonner";
 
 

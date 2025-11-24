@@ -6,8 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, User, Package } from "lucide-react";
 import { toast, Toaster } from "sonner";
-import { productsService } from "../../services/productsService";
-import { useCart } from "../../hooks/useCart";
+import { productsService } from "../services/productsService";
+import { useCart } from "../hooks/useCart";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useNavigate } from "react-router-dom";
-import { authService } from "../../services/authService";
+import { authService } from "../services/authService";
 
 interface Product {
   id: string;
