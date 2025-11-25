@@ -202,7 +202,7 @@ Abra essa URL no navegador. Se o backend estiver rodando corretamente e a variá
 
 O frontend está disponível em produção através do seguinte link:
 
-🔗 **Aplicação Online:** https://cantina-digital-frontend-git-deploy-matheus-marinhos-projects.vercel.app
+🔗 **Aplicação Online:** https://cantina-digital-frontend.vercel.app/
 
 > **Nota:** A aplicação online está conectada ao backend na Vercel.
 
