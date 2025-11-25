@@ -198,6 +198,16 @@ Abra essa URL no navegador. Se o backend estiver rodando corretamente e a variá
 
 ---
 
+## 5.5. Deploy do Frontend
+
+O frontend está disponível em produção através do seguinte link:
+
+🔗 **Aplicação Online:** https://cantina-digital-frontend-git-deploy-matheus-marinhos-projects.vercel.app
+
+> **Nota:** A aplicação online está conectada ao backend na Vercel.
+
+---
+
 ## 6. Scripts úteis
 
 ### Backend (`backend/package.json`)
